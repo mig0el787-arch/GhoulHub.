@@ -310,3 +310,60 @@ avatarButton("Invisible (Toggle)", function()
 			v.Transparency = invisible and 1 or 0
 			if v:FindFirstChildOfClass("Decal") then
 				v:FindFirst
+-- FLOATING BUTTON (Ghoul)
+
+local UIS = game:GetService("UserInputService")
+local dragging, dragStart, startPos
+
+-- Botão
+local FloatBtn = Instance.new("ImageButton", ScreenGui)
+FloatBtn.Name = "GhoulToggle"
+FloatBtn.Size = UDim2.fromOffset(60,60)
+FloatBtn.Position = UDim2.fromScale(0.05, 0.5)
+FloatBtn.BackgroundColor3 = Color3.fromRGB(20,20,20)
+FloatBtn.Image = "rbxassetid://74356605425526"
+FloatBtn.BorderSizePixel = 0
+FloatBtn.ZIndex = 10
+Instance.new("UICorner", FloatBtn).CornerRadius = UDim.new(1,0)
+
+-- Sombra/Glow simples
+local stroke = Instance.new("UIStroke", FloatBtn)
+stroke.Color = Color3.fromRGB(170,0,255)
+stroke.Thickness = 2
+
+-- Abrir / Fechar UI
+local opened = true
+FloatBtn.MouseButton1Click:Connect(function()
+	opened = not opened
+	Main.Visible = opened
+end)
+
+-- Drag mobile / PC
+FloatBtn.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = FloatBtn.Position
+	end
+end)
+
+FloatBtn.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch) then
+		local delta = input.Position - dragStart
+		FloatBtn.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
