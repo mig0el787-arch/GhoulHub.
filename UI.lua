@@ -119,3 +119,70 @@ label.TextSize = 16
 label.TextColor3 = Color3.fromRGB(180,120,255)
 
 print("UI carregada")
+-- Services
+local UIS = game:GetService("UserInputService")
+local Humanoid = Player.Character:WaitForChild("Humanoid")
+
+Player.CharacterAdded:Connect(function(char)
+	Humanoid = char:WaitForChild("Humanoid")
+end)
+
+-- Helper criar botão
+local function createButton(parent, text, callback)
+	local btn = Instance.new("TextButton", parent)
+	btn.Size = UDim2.new(0.9,0,0,40)
+	btn.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	btn.Text = text
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.TextColor3 = Color3.fromRGB(180,120,255)
+	btn.BorderSizePixel = 0
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,8)
+
+	btn.MouseButton1Click:Connect(callback)
+	return btn
+end
+
+-- Layout
+local layout = Instance.new("UIListLayout", Fun)
+layout.Padding = UDim.new(0,10)
+
+-- SPEED
+createButton(Fun, "Speed +", function()
+	Humanoid.WalkSpeed = Humanoid.WalkSpeed + 5
+end)
+
+createButton(Fun, "Speed -", function()
+	Humanoid.WalkSpeed = math.max(16, Humanoid.WalkSpeed - 5)
+end)
+
+-- JUMP
+createButton(Fun, "Jump +", function()
+	Humanoid.JumpPower = Humanoid.JumpPower + 10
+end)
+
+createButton(Fun, "Jump -", function()
+	Humanoid.JumpPower = math.max(50, Humanoid.JumpPower - 10)
+end)
+
+-- GRAVITY
+createButton(Fun, "Gravity Low", function()
+	workspace.Gravity = 80
+end)
+
+createButton(Fun, "Gravity Normal", function()
+	workspace.Gravity = 196
+end)
+
+-- INFINITE JUMP
+local infJump = false
+
+createButton(Fun, "Infinite Jump (Toggle)", function()
+	infJump = not infJump
+end)
+
+UIS.JumpRequest:Connect(function()
+	if infJump then
+		Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end)
