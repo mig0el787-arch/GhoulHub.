@@ -186,3 +186,85 @@ UIS.JumpRequest:Connect(function()
 		Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
+-- CAR FUNCTIONS
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+local carFly = false
+local carSpeed = 0
+local carConn
+
+-- Pega o carro atual
+local function getCar()
+	if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+		local seat = Player.Character.Humanoid.SeatPart
+		if seat and seat:IsA("VehicleSeat") then
+			return seat.Parent
+		end
+	end
+	return nil
+end
+
+-- Layout Car
+local carLayout = Instance.new("UIListLayout", Car)
+carLayout.Padding = UDim.new(0,10)
+
+-- Botão helper (usa o mesmo estilo)
+local function carButton(text, callback)
+	local btn = Instance.new("TextButton", Car)
+	btn.Size = UDim2.new(0.9,0,0,40)
+	btn.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	btn.Text = text
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.TextColor3 = Color3.fromRGB(180,120,255)
+	btn.BorderSizePixel = 0
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,8)
+	btn.MouseButton1Click:Connect(callback)
+	return btn
+end
+
+-- FLY CAR
+carButton("Fly Car (Toggle)", function()
+	carFly = not carFly
+	local car = getCar()
+	if not car then return end
+
+	if carFly then
+		local bv = Instance.new("BodyVelocity")
+		bv.Name = "GhoulCarFly"
+		bv.MaxForce = Vector3.new(1e6,1e6,1e6)
+		bv.Velocity = Vector3.new(0,0,0)
+		bv.Parent = car.PrimaryPart or car:FindFirstChildWhichIsA("BasePart")
+
+		carConn = RunService.RenderStepped:Connect(function()
+			if not carFly or not bv.Parent then return end
+			local cam = workspace.CurrentCamera
+			bv.Velocity = cam.CFrame.LookVector * (60 + carSpeed)
+		end)
+	else
+		if carConn then carConn:Disconnect() end
+		for _,v in pairs(car:GetDescendants()) do
+			if v.Name == "GhoulCarFly" then
+				v:Destroy()
+			end
+		end
+	end
+end)
+
+-- CAR SPEED +
+carButton("Car Speed +", function()
+	carSpeed = carSpeed + 20
+end)
+
+-- CAR SPEED -
+carButton("Car Speed -", function()
+	carSpeed = math.max(0, carSpeed - 20)
+end)
+
+-- RESET SPEED
+carButton("Reset Car Speed", function()
+	carSpeed = 0
+end)
