@@ -268,3 +268,45 @@ end)
 carButton("Reset Car Speed", function()
 	carSpeed = 0
 end)
+-- AVATAR FUNCTIONS
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+
+Player.CharacterAdded:Connect(function(char)
+	Character = char
+	Humanoid = char:WaitForChild("Humanoid")
+end)
+
+-- Helper botão (mesmo visual)
+local function avatarButton(text, callback)
+	local btn = Instance.new("TextButton", Avatar)
+	btn.Size = UDim2.new(0.9,0,0,40)
+	btn.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	btn.Text = text
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.TextColor3 = Color3.fromRGB(180,120,255)
+	btn.BorderSizePixel = 0
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,8)
+	btn.MouseButton1Click:Connect(callback)
+	return btn
+end
+
+-- Layout
+local avatarLayout = Instance.new("UIListLayout", Avatar)
+avatarLayout.Padding = UDim.new(0,10)
+
+-- INVISIBLE
+local invisible = false
+avatarButton("Invisible (Toggle)", function()
+	invisible = not invisible
+	for _,v in pairs(Character:GetDescendants()) do
+		if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
+			v.Transparency = invisible and 1 or 0
+			if v:FindFirstChildOfClass("Decal") then
+				v:FindFirst
