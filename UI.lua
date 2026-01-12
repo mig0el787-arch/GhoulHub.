@@ -1,5 +1,5 @@
 -- Ghoul Hub UI ☠️
-
+print("UI.lua CARREGOU")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
